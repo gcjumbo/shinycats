@@ -1,0 +1,154 @@
+- Class: meta
+  Course: Data Science Final Project
+  Lesson: Creating allcatsin Data
+  Author: Lizzie Eason and Jarren Santos
+  Type: Standard
+  Organization: Grinnell College Data Science Independent Study taught by Shonda Kuiper
+  Version: 2.4.2
+
+- Class: text
+  Output: Welcome to Lizzie & Jarren's first swirl course teaching you how to build the cats data set using the dplyr package! 
+
+- Class: text
+  Output: Please be sure you have your workspace set to the directory where you have two data sets named "dsin.csv" from https://catalog.data.gov/dataset/austin-animal-center-intakes and "dsout.csv" downloaded from https://catalog.data.gov/dataset/austin-animal-center-outcomes-version-1-demo.
+
+- Class: text
+  Output: Throughout the course, we will be cleaning a dataset. If at any time you wish to look at the current state of the data, type View(name_of_dataset). The dplyr package has been loaded for you. To begin, let's learn about the filter command.
+
+- Class: text
+  Output: The filter command allows you to subset a dataset based on a certain variable.
+
+- Class: text
+  Output: We want to subset our dataset to only include the cats from the animal shelter.
+
+- Class: cmd_question
+  Output: To do this, we use the filter command on the animal type variable. The code takes the form newdata = filter(data, variable == "category we want"). Try it! You can call the new data set newdata.
+  CorrectAnswer: newdata = filter(dsin, Animal.Type=="Cat")
+  AnswerTests: omnitest(correctExpr='newdata = filter(dsin, Animal.Type=="Cat")')
+  Hint: Not quite! Try newdata = filter(dsin, Animal.Type=="Cat").
+
+- Class: cmd_question
+  Output: Great! Now we use the mutate function to add a new variable to our data. The dateTime variable is more specific than we need, and not properly formatted. We want to add a new date variable in a better format. To add this variable to the data set we created last time, we use the newdata set  and type newdata = mutate(newdata, date=as.Date(DateTime, format= "%m/%d/%Y")). Try it!
+  CorrectAnswer: newdata = mutate(newdata$date=as.Date(DateTime, format= "%m/%d/%Y"))
+  AnswerTests: omnitest(correctExpr='newdata = mutate(newdata, date=as.Date(DateTime, format= "%m/%d/%Y"))')
+  Hint: Type newdata = mutate(newdata, date=as.Date(DateTime, format= "%m/%d/%Y")).
+
+- Class: cmd_question
+  Output: Awesome! It's a bit of a hassle to create the newdata data set twice though. To make things simpler, we use the pipeline operator. This way, instead of typing newdata = function(dataset, etc.) and then newdata = function(newdata, etc.), we can simply type newdata <- dataset %>% function(etc.) %>% function(etc.). Try combining the last two steps into one using this operator!
+  CorrectAnswer: newdata<-dsin %>% filter(Animal.Type=="Cat") %>% mutate(date=as.Date(DateTime, format= "%m/%d/%Y"))
+  AnswerTests: omnitest(correctExpr='newdata<-dsin %>% filter(Animal.Type=="Cat") %>% mutate(date=as.Date(DateTime, format= "%m/%d/%Y"))')
+  Hint: Type newdata<-dsin %>% filter(Animal.Type=="Cat") %>% mutate(date=as.Date(DateTime, format= "%m/%d/%Y")).
+
+- Class: text
+  Output: Now, we'll briefly discuss the arrange, group_by, and select functions.
+
+- Class: text
+  Output: When we're using the pipeline command, and we want to order the data by values in a particular column, we can write arrange(column) to do so.
+
+- Class: text
+  Output: When we want to create groups in the data based on a variable, we write group_by(column).
+
+- Class: text
+  Output: When we want to remove a particular set of columns, we write select(-c(column 1, column 2)). Alternatively, if we want to extract a few columns for a new data set, we don't use the minus sign, so we can write select(c(column 1, column 2)) and the output data set will only include columns 1 and 2.
+
+- Class: text
+  Output: In our animal shelter data, the cats are tracked by an animal ID number, but some of the cats have been put up for adoption multiple times. For our shiny app, we ony want to keep data from the first time each animal was brought into the shelter. To do this, we use the last 3 functions we just learned, along with the filter command.
+
+- Class: cmd_question
+  Output: We first arrange the data by the date variable we created, group by animal ID, then filter the data such that rownumber(Animal.Type)==1. Note that we do this filter because all of the Animal.Types should be Cat at this point, but since the data have been grouped by animal ID, if the rownumber of that entry is 1, it is the first entry with that particular animal ID. Lastly, we use the select function to get rid of the now redundant MonthYear and DateTime variables. Try all this using the pipeline on the newdata data set! Call the new dataset catsin.
+  CorrectAnswer: catsin <- newdata %>% arrange(date) %>% group_by(Animal.ID) %>% filter(row_number(Animal.Type)==1) %>% select(-c(MonthYear,DateTime))
+  AnswerTests: omnitest(correctExpr='catsin <- newdata %>% arrange(date) %>% group_by(Animal.ID) %>% filter(row_number(Animal.Type)==1) %>% select(-c(MonthYear,DateTime))')
+  Hint: Type catsin <- newdata %>% arrange(date) %>% group_by(Animal.ID) %>% filter(row_number(Animal.Type)==1) %>% select(-c(MonthYear,DateTime)).
+
+- Class: text
+  Output: Great! Now we've cleaned the Intake data and it is ready to merge. Next, we clean the outcome data, dsout.
+
+- Class: cmd_question
+  Output: First, we filter the data so it only includes cats and create a proper date variable like we did for the intake data. Do you remember the code from before? Call the new dataset catsout.
+  CorrectAnswer: catsout<-dsout %>% filter(Animal.Type=="Cat") %>% mutate(date=as.Date(DateTime, format= "%m/%d/%Y"))
+  AnswerTests: omnitest(correctExpr='catsout<-dsout %>% filter(Animal.Type=="Cat") %>% mutate(date=as.Date(DateTime, format= "%m/%d/%Y"))')
+  Hint: Type catsout<-dsout %>% filter(Animal.Type=="Cat") %>% mutate(date=as.Date(DateTime, format= "%m/%d/%Y")).
+
+- Class: cmd_question
+  Output: This dataset also includes a date of birth variable which needs to be reformatted just like the date variable. Use the pipeline operater again to mutate this variable. Keep the name of the dataset the same.
+  CorrectAnswer: catsout<- catsout %>% mutate(DOB=as.Date(Date.of.Birth,format="%m/%d/%Y"))
+  AnswerTests: omnitest(correctExpr='catsout<- catsout %>% mutate(DOB=as.Date(Date.of.Birth,format="%m/%d/%Y"))')
+  Hint: Type catsout<- catsout %>% mutate(DOB=as.Date(Date.of.Birth,format="%m/%d/%Y")).
+  
+- Class: cmd_question
+  Output: Now, we perform the same arrange, group_by, filter, and select as we did for the intake data, but we also remove the original date of birth column. Again, keep the name of the dataset the same.
+  CorrectAnswer: catsout<- catsout %>% arrange(date) %>% group_by(Animal.ID) %>% filter(row_number(Animal.Type)==1) %>% select(-c(MonthYear,DateTime,Date.of.Birth))
+  AnswerTests: omnitest(correctExpr='catsout<- catsout %>% arrange(date) %>% group_by(Animal.ID) %>% filter(row_number(Animal.Type)==1) %>% select(-c(MonthYear,DateTime,Date.of.Birth))')
+  Hint: Type catsout<- catsout %>% arrange(date) %>% group_by(Animal.ID) %>% filter(row_number(Animal.Type)==1) %>% select(-c(MonthYear,DateTime,Date.of.Birth)).
+
+- Class: text
+  Output: Now, we've cleaned both the intake and outcome data, so we are ready to merge!
+
+- Class: cmd_question
+  Output: The dplyr package contains several functions to merge datasets, but we use left_join() because we want to keep all of the cats in the intake dataset and match them by animal ID to the cats in the outcome dataset so that our full dataset has intake and outcome data for every cat with an intake and/or outcome. The arguments for left_join() should be the intake data (catsin), the outcome data (catsout), and then the by= argument should be the animal id variable both datasets share. You will probably get a warning about joining factors with different levels, but the merge should still work properly.
+  CorrectAnswer: allin<-left_join(catsin,catsout,by="Animal.ID")
+  AnswerTests: omnitest(correctExpr='allin<-left_join(catsin,catsout,by="Animal.ID")')
+  Hint: Type allin<-left_join(catsin,catsout,by="Animal.ID").
+
+- Class: text
+  Output: Notice that in this new dataset there are many redundant columns. We should get rid of the redundant columns with the .y extension using the select function.
+
+- Class: text
+  Output: The columns that are redundant are Breed.y,Color.y,Name.y, and Animal.Type.y. Then, we should rename those variables with the .x extension to not have that extension. There is also one other variable we should rename which we use to show how the rename function works, rename(Intake.Date=date.x). 
+
+- Class: cmd_question
+  Output: Do both of these steps using the pipeline operator! Call the new data set finaldata
+  CorrectAnswer: finaldata<-allin %>% select(-c(Breed.y,Color.y,Name.y,Animal.Type.y)) %>% rename(Breed=Breed.x,Color=Color.x,Name=Name.x,Animal.Type=Animal.Type.x,Intake.Date=date.x)
+  AnswerTests: omnitest(correctExpr='finaldata<-allin %>% select(-c(Breed.y,Color.y,Name.y,Animal.Type.y)) %>% rename(Breed=Breed.x,Color=Color.x,Name=Name.x,Animal.Type=Animal.Type.x,Intake.Date=date.x)')
+  Hint: Type finaldata<-allin %>% select(-c(Breed.y,Color.y,Name.y,Animal.Type.y)) %>% rename(Breed=Breed.x,Color=Color.x,Name=Name.x,Animal.Type=Animal.Type.x,Intake.Date=date.x).
+
+- Class: text
+  Output: Now, since we used the left_join() function, there are some cats in the intake dataset which do not have a matching outcome. These are the cats that have not been adopted yet. For these cats, we need to impute a new outcome type called unadopted.
+
+- Class: cmd_question
+  Output: To impute this new category in the outcome type, we first have to add a level. We provide the code to do this since we do not use the dplyr package. Type levels(finaldata$Outcome.Type)<-c(levels(finaldata$Outcome.Type),"Unadopted").
+  CorrectAnswer: levels(finaldata$Outcome.Type)<-c(levels(finaldata$Outcome.Type),"Unadopted")
+  AnswerTests: omnitest(correctExpr='levels(finaldata$Outcome.Type)<-c(levels(finaldata$Outcome.Type),"Unadopted")')
+  Hint: Type levels(finaldata$Outcome.Type)<-c(levels(finaldata$Outcome.Type),"Unadopted").
+
+- Class: cmd_question
+  Output: Now, we input the new category where all the NA values are using the code finaldata[["Outcome.Type"]][is.na(finaldata[["Outcome.Type"]])] <- "Unadopted"
+  CorrectAnswer: finaldata[["Outcome.Type"]][is.na(finaldata[["Outcome.Type"]])] <- "Unadopted"
+  AnswerTests: omnitest(correctExpr='finaldata[["Outcome.Type"]][is.na(finaldata[["Outcome.Type"]])] <- "Unadopted"')
+  Hint: Type finaldata[["Outcome.Type"]][is.na(finaldata[["Outcome.Type"]])] <- "Unadopted".
+
+- Class: cmd_question
+  Output: Now that we have created a new level, we want to subset the data to only include outcome types that have a significant number of entries (for example, Disposal and Missing are small and somewhat ambiguous categories). Do this by using the filter function to only keep entries with the outcome type Adoption, Died, Euthanasia, Return to Owner, Transfer or the Unadopted level we just created. Then, use the mutate function to create a new variable, outcome, which is outcome type, but with only the aforementioned levels. Finally, use the select function to get rid of the original outcome type variable. Call this new dataset finaldata again.
+  CorrectAnswer: finaldata<-finaldata %>% filter(Outcome.Type=="Adoption"|Outcome.Type=="Died"|Outcome.Type=="Euthanasia"|Outcome.Type=="Return to Owner"|Outcome.Type=="Transfer"|Outcome.Type=="Unadopted") %>% mutate(outcome=factor(Outcome.Type,levels=c("Adoption","Died","Euthanasia","Return to Owner","Transfer","Unadopted"))) %>% select(-c(Outcome.Type))
+  AnswerTests: omnitest(correctExpr='finaldata<-finaldata %>% filter(Outcome.Type=="Adoption"|Outcome.Type=="Died"|Outcome.Type=="Euthanasia"|Outcome.Type=="Return to Owner"|Outcome.Type=="Transfer"|Outcome.Type=="Unadopted") %>% mutate(outcome=factor(Outcome.Type,levels=c("Adoption","Died","Euthanasia","Return to Owner","Transfer","Unadopted"))) %>% select(-c(Outcome.Type))')
+  Hint: Type finaldata<-finaldata %>% filter(Outcome.Type=="Adoption"|Outcome.Type=="Died"|Outcome.Type=="Euthanasia"|Outcome.Type=="Return to Owner"|Outcome.Type=="Transfer"|Outcome.Type=="Unadopted") %>% mutate(outcome=factor(Outcome.Type,levels=c("Adoption","Died","Euthanasia","Return to Owner","Transfer","Unadopted"))) %>% select(-c(Outcome.Type)).
+
+- Class: text
+  Output: We're almost done! All that is left is to construct dummy variables for the predictors with lots of categories and create a binary response variable so that we can do logistic regression for our shiny app.
+
+- Class: text
+  Output: Notice that the Color and Breed variables have a lot of different categories. To make our analyses easier, we are going to group the different levels of these variables in our model. This portion of the analysis took a lot of sorting through the data, which we won't make you go through! We simply provide example code to give you an idea of how we did this portion.
+
+- Class: cmd_question
+  Output: The example we provide is how we created the domestic shorthair category for breed. For this predictor, we created a variable with a 1 for all cats which were either Domestic Shorthair Mix or Domestic Shorthair, and a 0 otherwise. You can probably think of a way to do this using the mutate function, but we'll provide you with another strategy here. Create a new variable called DS<-(finaldata$Breed=="Domestic Shorthair Mix"|finaldata$Breed=="Domestic Shorthair")*1. Note that the | is the or operator, so this code will take all entries with Breed Domestic Shorthair or Domestic Shorthair Mix, and give them a 1 and all other entries a 0.
+  CorrectAnswer: DS<-(finaldata$Breed=="Domestic Shorthair Mix"|finaldata$Breed=="Domestic Shorthair")*1
+  AnswerTests: omnitest(correctExpr='DS<-(finaldata$Breed=="Domestic Shorthair Mix"|finaldata$Breed=="Domestic Shorthair")*1')
+  Hint: Type DS<-(finaldata$Breed=="Domestic Shorthair Mix"|finaldata$Breed=="Domestic Shorthair")*1.
+
+- Class: text
+  Output: We've made it to the last step of our data cleaning process! We just need to create our response variable. For logistic regression, we need a binary response variable. We will use the outcome variable we created earlier, and have the outcome be 1 if the animal was adopted and 0 if they had any other outcome. Again, we could do this with mutate or similar to the code we used above, but instead we introduce the ifelse function to give you one more tool for creating dummy variables.
+
+- Class: cmd_question
+  Output: Write finaldata$adopted<-ifelse(finaldata$outcome=="Adoption",1,0).
+  CorrectAnswer: finaldata$adopted<-ifelse(finaldata$outcome=="Adoption",1,0)
+  AnswerTests: omnitest(correctExpr='finaldata$adopted<-ifelse(finaldata$outcome=="Adoption",1,0)')
+  Hint: Write finaldata$adopted<-ifelse(finaldata$outcome=="Adoption",1,0).
+
+- Class: cmd_question
+  Output: We are done! You can look at the cleaned data set you just made by typing View(finaldata). I hope this helps you clean whatever data set you're looking at next!
+  CorrectAnswer: View(finaldata)
+  AnswerTests: omnitest(correctExpr='View(finaldata)')
+  Hint: Type View(finaldata)
+
+- Class: text
+  Output: If you want to export this file, you can use the write.csv() function with the arguments finaldata and file="destination"
