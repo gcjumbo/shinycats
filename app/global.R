@@ -1,14 +1,12 @@
 
 require(shiny)
 require(ggplot2)
-require(ROCR)
 require(pROC)
 
 # Jarren's Working Directory
-setwd("~/Desktop/shinycats")
+setwd("~/Desktop/shinycats/app")
 
 # Use datasets previously cleaned; for more information, see catsClean.R
-cats <- read.csv("catsFinal.csv")
 train <- read.csv("catsTrain.csv")
 test <- read.csv("catsTest.csv")
 

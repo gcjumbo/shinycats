@@ -28,7 +28,11 @@ shinyUI(fluidPage(
                                               "Black" = "black",
                                               "Orange" = "orange",
                                               "Age Upon Intake" = "AgeDaysInt"),
-                               selected = c("Intake.Type", "juvenile", "orange")),
+                               selected = c("Sex.upon.Intake",
+                                            "kitten",
+                                            "juvenile",
+                                            "black",
+                                            "orange")),
             submitButton("Submit"),
             width = 2),
         

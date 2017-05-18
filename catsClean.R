@@ -15,6 +15,12 @@ setwd("~/Desktop/shinycats")
 cats <- read.csv("allcatsin.csv")
 
 
+## Necessary function for ROC Curves
+simple_roc <- function(labels, scores){
+    labels <- labels[order(scores, decreasing=TRUE)]
+    data.frame(TPR=cumsum(labels)/sum(labels), FPR=cumsum(!labels)/sum(!labels), labels)
+}
+
 
 ### Miscellaneous Data Cleaning
 
@@ -99,7 +105,7 @@ catsTest$prob1 <- predict(model1, catsTest, type = "response")
 catsTest <- catsTest[catsTest$prob1 > 0.1, ]
 
 # Using the `pROC` package
-roc(response = catsTest$adopted, predictor = catsTest$prob1, direction = "<")
+roc(response = catsTest$adopted, predictor = catsTest$prob1, direction = "auto")
 
 # Using the `ROCR` package
 pr <- prediction(catsTest$prob1, catsTest$adopted)
@@ -125,14 +131,9 @@ catsTrain %>%
 roc1 <- plot(roc(catsTrain$adopted, catsTrain$prob1, direction = "<"),
      col = "black", lwd = 3, main = "Test")
 
-simple_roc <- function(labels, scores){
-    labels <- labels[order(scores, decreasing=TRUE)]
-    data.frame(TPR=cumsum(labels)/sum(labels), FPR=cumsum(!labels)/sum(!labels), labels)
-}
-
 roc2 <- simple_roc(catsTrain$adopted == "1", catsTrain$link1)
 with(roc2, points(1 - FPR, TPR, col = 1 + labels, pch = 2))
-with(roc2, legend('topright', levels(cats$adopted), pch = 2, col = c("red", "black"), bty='n', cex=.75))
+with(roc2, legend('topright', levels(catsTrain$adopted), pch = 2, col = c("red", "black"), bty='n', cex=.75))
 
 
 ## Testing Data Visualizations
@@ -148,11 +149,6 @@ catsTest %>%
 # ROC Curve
 roc1 <- plot(roc(catsTest$adopted, catsTest$prob1, direction = "<"),
              col = "black", lwd = 3, main = "Test")
-
-simple_roc <- function(labels, scores){
-    labels <- labels[order(scores, decreasing=TRUE)]
-    data.frame(TPR=cumsum(labels)/sum(labels), FPR=cumsum(!labels)/sum(!labels), labels)
-}
 
 roc2 <- simple_roc(catsTest$adopted == "1", catsTest$link1)
 with(roc2, points(1 - FPR, TPR, col = 1 + labels, pch = 2))
