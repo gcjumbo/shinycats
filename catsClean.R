@@ -50,7 +50,7 @@ cats$adopted <- as.factor(cats$adopted)
 cats <- cats[!is.na(cats$adopted), ]
 
 # Produce fully cleaned dataset
-write.csv(cats, file = "catsFinal.csv")
+# write.csv(cats, file = "catsFinal.csv")
 
 
 ## Creating training and test data
@@ -66,8 +66,8 @@ catsTrain <- cats[x,]
 catsTest <- cats[-x,]
 
 # Produce the training and testing datasets
-write.csv(catsTrain, file = "catsTrain.csv")
-write.csv(catsTest, file = "catsTest.csv")
+# write.csv(catsTrain, file = "catsTrain.csv")
+# write.csv(catsTest, file = "catsTest.csv")
 
 
 

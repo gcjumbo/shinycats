@@ -1,10 +1,8 @@
 
+require(magrittr)
 require(shiny)
 require(ggplot2)
 require(pROC)
-
-# Jarren's Working Directory
-setwd("~/Desktop/shinycats/app")
 
 # Use datasets previously cleaned; for more information, see catsClean.R
 train <- read.csv("catsTrain.csv")
